@@ -1,0 +1,43 @@
+name: CMake build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: { dir: [
+        'assignment1',
+        'assignment2',
+        'assignment3',
+        'assignment4',
+        'assignment5',
+        'assignment6',
+        'assignment7',
+        'assignment8',
+        'assignment9',
+      ] }
+      
+    steps:
+    - name: ⬇ Checkout repo
+      uses: actions/checkout@v3
+      
+    - name: 📦 Install dependencies
+      run: |
+        sudo apt-get install libclang-dev liblldb-dev || sudo apt-get install libclang-6.0-dev liblldb-6.0-dev || sudo apt-get install libclang-4.0-dev liblldb-4.0-dev || sudo apt-get install libclang-3.8-dev liblldb-3.8-dev
+        sudo apt-get install universal-ctags || sudo apt-get install exuberant-ctags
+        sudo apt-get install git cmake make g++ clang-format pkg-config libboost-filesystem-dev libboost-serialization-dev libgtksourceviewmm-3.0-dev aspell-en libaspell-dev libgit2-dev
+
+    - name: 🏗 CMake, configure and generate makefiles
+      working-directory: ${{ matrix.dir }}
+      run: cmake -S . -B build
+
+    - name: 👷 CMake, build
+      working-directory: ${{ matrix.dir }}
+      run: cmake --build build
